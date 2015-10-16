@@ -17,16 +17,22 @@
 <div data-role="page">
     <div data-role="header">
         <a data-icon="home" data-iconpos="notext"></a>
-        <h1>First Screen Header</h1>
+        <h1>Main Screen Header</h1>
 
     </div>
 
-    <div data-role="content"></div>
+    <div data-role="content">
+        <canvas id="mainCanvas" width="100%" height="100%"></canvas>
+    </div>
 
     <div data-role="footer">
-        <a data-icon="arrow-l">Floor Down</a>
-        <h1>Floor 1</h1>
-        <a data-icon="arrow-r">Floor Down</a>
+        <div data-role="navbar">
+            <ul>
+        <li><a data-icon="arrow-l">Floor Down</a></li>
+        <li><p align="center">Floor 1</p></li>
+        <li><a data-icon="arrow-r">Floor Up</a></li>
+                </ul>
+            </div>
     </div>
 </div>
 
