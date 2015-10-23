@@ -109,10 +109,11 @@ function spaceFree(colour, space){
 
 function testPost(colour, spaceIndex){
 
-        getAjax("putSpace?spaceIndex=" + spaceIndex + "&availability=" + 0, successTestPost);
+        getAjax("putSpace?spaceIndex=" + spaceIndex + "&availability=" + (colour=='red'? 1: 0), successTestPost);
 
 }
 
 function successTestPost(data){
     console.log(data);
+    getAjax("getSpaces", successParkingData);
 }
