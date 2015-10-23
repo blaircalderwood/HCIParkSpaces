@@ -39,7 +39,7 @@ window.onload = function () {
     createSpacesRow((mainCanvas.width() / 5) * 2);
     createSpacesRow((mainCanvas.width() / 5) * 4);
 
-    getParkingData();
+    getAjax("getSpaces", successParkingData);
 
 };
 
@@ -66,15 +66,15 @@ function floorUp(){
     spaceFree('red', parkingArray[1]);
 }
 
-function getParkingData(){
+function getAjax(urlEnd, successFunction){
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/getSpaces?callback=successParkingData",
+        url: "https://parking-spaces-blaircalderwood.c9.io/" + urlEnd,
         async: "true",
         contentType: "application/json",
         dataType: 'jsonp',
-        success: successParkingData || function () {
+        success: successFunction || function () {
             console.log("Recieved data");
         }
     });
@@ -82,9 +82,18 @@ function getParkingData(){
 }
 
 function successParkingData(data){
+
     data = JSON.parse(data);
 
-    console.log(data[0]);
+    console.log(data);
+    for(var i = 0; i < data.length; i ++){
+        if(data[i] == 0){
+            spaceFree('green', parkingArray[i]);
+        }
+        else{
+            spaceFree('red', parkingArray[i]);
+        }
+    }
 }
 
 //Change the colour of a space to indicate whether it is free (green) or taken (red)
@@ -96,4 +105,14 @@ function spaceFree(colour, space){
     context.fillRect(space.x, space.y, space.width, space.height);
     context.strokeRect(space.x, space.y, space.width, space.height);
 
+}
+
+function testPost(colour, spaceIndex){
+
+        getAjax("putSpace?spaceIndex=" + spaceIndex + "&availability=" + 0, successTestPost);
+
+}
+
+function successTestPost(data){
+    console.log(data);
 }
