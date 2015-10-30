@@ -40,21 +40,15 @@
 </div>
 
 <div data-role="page" id="parkingPage">
-    <div data-role="header">
-        <a data-icon="home" data-iconpos="notext"></a>
 
-    </div>
-
-    <div data-role="content">
         <canvas id="mainCanvas"></canvas>
-    </div>
 
-    <div data-role="footer">
+    <div data-role="footer" style="margin: 0;">
         <div data-role="navbar" >
             <ul>
-        <li><a data-icon="arrow-l" >Floor Down</a></li>
-        <li><p align="center">Floor 1</p></li>
-        <li><a data-icon="arrow-r">Floor Up</a></li>
+        <li><a data-icon="arrow-l" onclick="floorDown()">Floor Down</a></li>
+        <li><p id="floorText" align="center">Floor 1</p></li>
+        <li><a data-icon="arrow-r" onclick="floorUp()">Floor Up</a></li>
                 </ul>
             </div>
     </div>
