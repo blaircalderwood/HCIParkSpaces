@@ -95,7 +95,7 @@ function initAutocomplete() {
 
     var icon = {
         url: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Parking_icon.svg", //url
-        scaledSize: new google.maps.Size(20, 20),
+        scaledSize: new google.maps.Size(50, 50),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(0, 0)
     };
