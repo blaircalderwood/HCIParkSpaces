@@ -16,9 +16,26 @@ ParkingSpace = function(x, y, width, height){
 
 window.onload = function () {
 
-    console.log("TEST");
+    $("#parkingPage").on('pageshow', showMapsPage);
+
+};
+
+function showMapsPage(){
+
+    setUpCanvas();
+    //Create 3 rows of parking spaces
+    createSpacesRow(0);
+    createSpacesRow((mainCanvas.width() / 5) * 2);
+    createSpacesRow((mainCanvas.width() / 5) * 4);
+
+    getAjax("getSpaces", successParkingData);
+
+}
+function setUpCanvas(){
+
     //Set up the canvas size to fit the screen
-    var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() - $(".ui-footer").outerHeight() - $(".ui-content").outerHeight() + $(".ui-content").height();
+    var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -
+        $(".ui-footer").outerHeight() - $(".ui-content").outerHeight() + $(".ui-content").height();
     $('.ui-content').height(content);
 
     var domCanvas = document.getElementById('mainCanvas');
@@ -35,15 +52,7 @@ window.onload = function () {
     mainCanvas.on("swipeleft", floorDown);
     mainCanvas.on("swiperight", floorUp);
 
-    //Create 3 rows of parking spaces
-    createSpacesRow(0);
-    createSpacesRow((mainCanvas.width() / 5) * 2);
-    createSpacesRow((mainCanvas.width() / 5) * 4);
-
-    getAjax("getSpaces", successParkingData);
-
-};
-
+}
 //Create a row of six parking spaces
 function createSpacesRow(x){
 
