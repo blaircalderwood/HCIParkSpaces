@@ -107,11 +107,16 @@ function showPosition(position) {
     }
 
 function toggleBounce() {
+
+    $("#popupBasic").popup("open");
+
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
     } else {
         marker.setAnimation(google.maps.Animation.BOUNCE);
     }
+
+
 
 }
 
