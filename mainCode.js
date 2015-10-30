@@ -14,8 +14,9 @@ ParkingSpace = function(x, y, width, height){
 
 };
 
-$.document.onload = function () {
+window.onload = function () {
 
+    console.log("TEST");
     //Set up the canvas size to fit the screen
     var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() - $(".ui-footer").outerHeight() - $(".ui-content").outerHeight() + $(".ui-content").height();
     $('.ui-content').height(content);
