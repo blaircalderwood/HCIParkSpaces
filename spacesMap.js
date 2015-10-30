@@ -65,21 +65,29 @@ function createSpacesRow(x){
 //View parking spaces on the floor below
 function floorDown(){
 
-    currentFloor --;
-    getSpaces();
+    if(currentFloor > 0) {
+        currentFloor--;
+        getSpaces();
+    }
 
 }
 
 //View parking spaces on the floor above
-function floorUp(){
+function floorUp(maxFloor){
 
-    currentFloor ++;
-    getSpaces();
+    if(currentFloor < maxFloor) {
+        currentFloor++;
+        getSpaces();
+    }
 
 }
 
 function getSpaces(){
     getAjax("getSpaces?floor=" + currentFloor, successParkingData);
+}
+
+function getMaxFloors(){
+    getAjax("getMaxFloors", floorUp);
 }
 
 function getAjax(urlEnd, successFunction){
