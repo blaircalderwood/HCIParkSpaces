@@ -9,7 +9,7 @@ ParkingSpace = function(x, y, width, height){
     this.y = y;
     this.width = width;
     this.height = height;
-    spaceFree('green', this);
+    spaceFree('green', this,parkingArray.length);
     return this;
 
 };
@@ -20,7 +20,7 @@ window.onload = function () {
 
 };
 
-function showMapsPage(){
+function showMapsPage() {
 
     setUpCanvas();
     //Create 3 rows of parking spaces
@@ -29,9 +29,10 @@ function showMapsPage(){
     createSpacesRow((mainCanvas.width() / 5) * 4);
 
     getSpaces();
+
 }
 
-function setUpCanvas(){
+function setUpCanvas() {
 
     //Set up the canvas size to fit the screen
     var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -
@@ -44,22 +45,27 @@ function setUpCanvas(){
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-    //Fill the canvas with grey to illustrate the car park's roads
-    context.fillStyle = 'grey';
-    context.fillRect(0, 0, mainCanvas.width(), mainCanvas.height());
+
+
 
     //Set up the swipe left and right functions to change floor
     mainCanvas.on("swipeleft", floorUp);
     mainCanvas.on("swiperight", floorDown);
 
-}
+
+};
 //Create a row of six parking spaces
 function createSpacesRow(x){
 
-    for(var i = 0; i < 6; i ++){
+    for(var i = 0; i < 6; i ++) {
         parkingArray.push(new ParkingSpace(x, (mainCanvas.height() / 5) * i, mainCanvas.width() / 5, mainCanvas.height() / 5));
     }
 
+        var road_arrow = new Image();
+        road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
+        road_arrow.onload = function () {
+            context.drawImage(road_arrow, x+mainCanvas.width() / 5, 0,  mainCanvas.width() / 5, 800);
+    }
 }
 
 //View parking spaces on the floor below
@@ -105,41 +111,46 @@ function getAjax(urlEnd, successFunction){
 
 }
 
-function successParkingData(data){
+function successParkingData(data) {
 
     document.getElementById("floorText").innerText = ("Floor " + currentFloor);
 
     data = JSON.parse(data);
 
     console.log(data);
-    for(var i = 0; i < data.length; i ++){
-        if(data[i] == 0){
-            spaceFree('green', parkingArray[i]);
+    for (var i = 0; i < data.length; i++) {
+        if (data[i] == 0) {
+            spaceFree('green', parkingArray[i],i);
         }
-        else{
-            spaceFree('red', parkingArray[i]);
+        else {
+            spaceFree('red', parkingArray[i],i);
+
+
         }
     }
+
 }
 
 //Change the colour of a space to indicate whether it is free (green) or taken (red)
-function spaceFree(colour, space){
+    function spaceFree(colour, space, index) {
 
-    context.fillStyle = colour;
-    context.strokeStyle = 'white';
-    context.strokeWidth = 5;
-    context.fillRect(space.x, space.y, space.width, space.height);
-    context.strokeRect(space.x, space.y, space.width, space.height);
+        context.fillStyle = colour;
+        context.strokeStyle = 'white';
+        context.strokeWidth = 5;
+        context.fillRect(space.x, space.y, space.width, space.height);
+        context.strokeRect(space.x, space.y, space.width, space.height);
+        context.strokeText(index+1, space.x + (space.width / 2), space.y + (space.height / 2));
+    }
 
-}
+    function testPost(colour, spaceIndex) {
 
-function testPost(colour, spaceIndex){
+        getAjax("putSpace?floor=2&spaceIndex=" + spaceIndex + "&availability=" + (colour == 'red' ? 1 : 0), successTestPost);
 
-        getAjax("putSpace?floor=2&spaceIndex=" + spaceIndex + "&availability=" + (colour=='red'? 1: 0), successTestPost);
+    }
 
-}
+    function successTestPost(data) {
+        console.log(data);
+        getSpaces();
+    }
 
-function successTestPost(data){
-    console.log(data);
-    getSpaces();
-}
+
