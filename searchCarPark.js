@@ -3,7 +3,7 @@ var map;
 
 function showPosition(position) {
     x.innerHTML = "Latitude: " + position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude;
+    "<br>Longitude: " + position.coords.longitude;
 }
 
 // This example adds a search box to a map, using the Google Place Autocomplete
@@ -126,4 +126,3 @@ function toggleBounce() {
 
 
 }
-
