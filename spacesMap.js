@@ -44,71 +44,13 @@ function setUpCanvas(){
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-
-    var blueprint_background = new Image();
-    blueprint_background.src = 'http://thumbs.dreamstime.com/t/arrow-parking-lot-white-painted-stones-39394625.jpg';
-    blueprint_background.onload = function(){
-        context.drawImage(blueprint_background,100,0,400,700);
-        //rotateAndPaintImage ( context,blueprint_background ,Math.PI);
-        context.drawImage(blueprint_background,500,0,400,700);
-        //blueprint_background.rotate( -Math.PI );
-
-
-
-
-
-
-
-
     //Fill the canvas with grey to illustrate the car park's roads
-    //context.fillStyle = 'grey';
-    //context.fillRect(0, 0, mainCanvas.width(), mainCanvas.height());
-
-
-    //Direction Lines
-
-
-
-    context.beginPath();
-    context.moveTo( mainCanvas.width()/3.5,  mainCanvas.height()/5);
-    context.lineTo(mainCanvas.width()/3.5, mainCanvas.height()/1.2 );
-    context.stroke();
-    context.closePath();
-    context.fillStyle = 'black';
-    drawArrowhead(mainCanvas.width()/3.5, mainCanvas.height()/1.2 ,Math.PI);
-
-    function drawArrowhead(x,y,radians){
-        context.save();
-        context.beginPath();
-        context.translate(x,y);
-        context.rotate(radians);
-        context.moveTo(0,0);
-        context.lineTo(5,20);
-        context.lineTo(-5,20);
-        context.closePath();
-        context.restore();
-        context.fill();
-    }
-
+    context.fillStyle = 'grey';
+    context.fillRect(0, 0, mainCanvas.width(), mainCanvas.height());
 
     //Set up the swipe left and right functions to change floor
-<<<<<<< Updated upstream:spacesMap.js
     mainCanvas.on("swipeleft", floorUp);
     mainCanvas.on("swiperight", floorDown);
-=======
-    mainCanvas.on("swipeleft", floorDown);
-    mainCanvas.on("swiperight", floorUp);
-
-    //Create 3 rows of parking spaces
-    createSpacesRow(0);
-    createSpacesRow((mainCanvas.width() / 5) * 2);
-    createSpacesRow((mainCanvas.width() / 5) * 4);
-
-    getAjax("getSpaces", successParkingData);
-
-};
-};
->>>>>>> Stashed changes:mainCode.js
 
 }
 //Create a row of six parking spaces
