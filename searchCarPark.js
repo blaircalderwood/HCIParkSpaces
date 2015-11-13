@@ -112,6 +112,18 @@ function initAutocomplete() {
     marker.addListener('click', toggleBounce);
 
 
+    /*marker = new google.maps.Marker({
+        icon: icon,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: {
+            lat: 55.864408, lng: -4.260743
+        }
+    });
+    marker.addListener('click', toggleBounce);*/
+
+
 }
 
 function toggleBounce() {
