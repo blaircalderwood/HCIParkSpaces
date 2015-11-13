@@ -1,6 +1,7 @@
 var context, mainCanvas;
 var parkingArray = [];
 var currentFloor = 0;
+var totalSpaces = 0;
 
 //Create a new parking space and set it's availability to free
 ParkingSpace = function(x, y, width, height){
@@ -16,6 +17,7 @@ ParkingSpace = function(x, y, width, height){
 
 window.onload = function () {
 
+    getTotalFreeSpaces();
     $("#parkingPage").on('pageshow', showMapsPage);
 
 };
@@ -45,15 +47,19 @@ function setUpCanvas() {
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-
+    /*context.translate(mainCanvas.width / 2, mainCanvas.height / 2);
+    context.rotate(180);
+    //draw image to canvas here
+    context.rotate(-180);
+    context.translate(-(mainCanvas.width / 2))*/
 
 
     //Set up the swipe left and right functions to change floor
     mainCanvas.on("swipeleft", floorUp);
     mainCanvas.on("swiperight", floorDown);
 
+}
 
-};
 //Create a row of six parking spaces
 function createSpacesRow(x){
 
@@ -88,12 +94,22 @@ function floorUp(maxFloor){
 
 }
 
+function getTotalFreeSpaces(){
+    getAjax("getTotalFreeSpaces", totalSpacesSuccess);
+}
+
+function totalSpacesSuccess(data){
+    data = JSON.parse(data);
+    $("#availSpacesPopup").text("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
+    console.log("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
+}
+
 function getSpaces(){
     getAjax("getSpaces?floor=" + currentFloor, successParkingData);
 }
 
 function getMaxFloors(){
-    getAjax("getMaxFloors", floorUp);
+    getAjax("getMaxFloors", function(data){return data});
 }
 
 function getAjax(urlEnd, successFunction){
