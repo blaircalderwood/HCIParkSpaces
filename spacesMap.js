@@ -54,17 +54,30 @@ function setUpCanvas() {
 
 
 };
-//Create a row of six parking spaces
-function createSpacesRow(x){
 
-    for(var i = 0; i < 6; i ++) {
+
+//Create a row of six parking spaces
+function createSpacesRow(x) {
+
+    for (var i = 0; i < 6; i++) {
         parkingArray.push(new ParkingSpace(x, (mainCanvas.height() / 5) * i, mainCanvas.width() / 5, mainCanvas.height() / 5));
     }
 
-        var road_arrow = new Image();
-        road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
-        road_arrow.onload = function () {
-            context.drawImage(road_arrow, x+mainCanvas.width() / 5, 0,  mainCanvas.width() / 5, 800);
+    var road_arrow = new Image();
+    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
+    var road_arrow2 = new Image();
+    road_arrow2.src = "images/arrow.jpg";
+
+    if (x  == 0) {
+    road_arrow.onload = function () {
+
+            context.drawImage(road_arrow, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);}
+        }
+    else {
+
+        road_arrow2.onload = function () {
+            context.drawImage(road_arrow2, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);
+        }
     }
 }
 
