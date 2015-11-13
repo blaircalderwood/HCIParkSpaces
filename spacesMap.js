@@ -58,7 +58,6 @@ function setUpCanvas() {
     mainCanvas.on("swipeleft", floorUp);
     mainCanvas.on("swiperight", floorDown);
 
-}
 
 };
 //Create a row of six parking spaces
