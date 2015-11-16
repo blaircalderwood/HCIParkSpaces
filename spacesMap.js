@@ -19,6 +19,8 @@ window.onload = function () {
     //Get the total amount of free spaces to display in the car park pop-up
     getTotalFreeSpaces();
 
+    //TO DO: fix this - not best way of doing it
+    if($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
     //Show the map of free spaces
     $("#parkingPage").on('pageshow', showMapsPage);
 
@@ -93,6 +95,10 @@ function floorDown(){
 
 }
 
+function getMaxFloors(){
+    getAjax("getMaxFloors", floorUp);
+}
+
 //View parking spaces on the floor above
 function floorUp(maxFloor){
 
@@ -116,10 +122,6 @@ function getSpaces(){
     getAjax("getSpaces?floor=" + currentFloor, successParkingData);
 }
 
-function getMaxFloors(){
-    getAjax("getMaxFloors", floorUp);
-}
-
 function getAjax(urlEnd, successFunction){
 
     $.ajax({
@@ -138,6 +140,8 @@ function getAjax(urlEnd, successFunction){
 function successParkingData(data) {
 
     document.getElementById("floorText").innerText = ("Floor " + currentFloor);
+
+    localStorage.setItem('parkingArray', data);
 
     data = JSON.parse(data);
 
