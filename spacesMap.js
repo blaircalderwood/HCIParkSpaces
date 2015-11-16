@@ -1,7 +1,6 @@
 var context, mainCanvas;
 var parkingArray = [];
 var currentFloor = 0;
-var totalSpaces = 0;
 
 //Create a new parking space and set it's availability to free
 ParkingSpace = function(x, y, width, height){
@@ -17,20 +16,30 @@ ParkingSpace = function(x, y, width, height){
 
 window.onload = function () {
 
+    //Get the total amount of free spaces to display in the car park pop-up
     getTotalFreeSpaces();
+
+    //Show the map of free spaces
     $("#parkingPage").on('pageshow', showMapsPage);
 
 };
 
+//Show the map of free spaces
 function showMapsPage() {
 
     setUpCanvas();
+
     //Create 3 rows of parking spaces
     createSpacesRow(0);
     createSpacesRow((mainCanvas.width() / 5) * 2);
     createSpacesRow((mainCanvas.width() / 5) * 4);
 
+    //Find out which spaces are currently taken
     getSpaces();
+
+    //Set functions to change floor
+    mainCanvas.on("swipeleft", getMaxFloors);
+    mainCanvas.on("swiperight", floorDown);
 
 }
 
@@ -47,19 +56,8 @@ function setUpCanvas() {
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-    /*context.translate(mainCanvas.width / 2, mainCanvas.height / 2);
-    context.rotate(180);
-    //draw image to canvas here
-    context.rotate(-180);
-    context.translate(-(mainCanvas.width / 2))*/
+}
 
-
-    //Set up the swipe left and right functions to change floor
-    mainCanvas.on("swipeleft", floorUp);
-    mainCanvas.on("swiperight", floorDown);
-
-
-};
 //Create a row of six parking spaces
 function createSpacesRow(x) {
 
@@ -112,7 +110,6 @@ function getTotalFreeSpaces(){
 function totalSpacesSuccess(data){
     data = JSON.parse(data);
     $("#availSpacesPopup").text("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
-    console.log("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
 }
 
 function getSpaces(){
@@ -120,7 +117,7 @@ function getSpaces(){
 }
 
 function getMaxFloors(){
-    getAjax("getMaxFloors", function(data){return data});
+    getAjax("getMaxFloors", floorUp);
 }
 
 function getAjax(urlEnd, successFunction){
@@ -167,12 +164,6 @@ function successParkingData(data) {
         context.fillRect(space.x, space.y, space.width, space.height);
         context.strokeRect(space.x, space.y, space.width, space.height);
         context.strokeText(index+1, space.x + (space.width / 2), space.y + (space.height / 2));
-    }
-
-    function testPost(colour, spaceIndex) {
-
-        getAjax("putSpace?floor=2&spaceIndex=" + spaceIndex + "&availability=" + (colour == 'red' ? 1 : 0), successTestPost);
-
     }
 
     function successTestPost(data) {
