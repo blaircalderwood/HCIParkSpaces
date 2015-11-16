@@ -3,7 +3,7 @@ var map;
 
 function showPosition(position) {
     x.innerHTML = "Latitude: " + position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude;
+    "<br>Longitude: " + position.coords.longitude;
 }
 
 // This example adds a search box to a map, using the Google Place Autocomplete
@@ -15,7 +15,7 @@ function initAutocomplete() {
     $.mobile.loading("show");
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -33.8688, lng: 151.2195},
-        zoom: 13,
+        zoom: 15,
         mapTypeId: google.maps.MapTypeId.ROADMAP
 
     });
@@ -95,7 +95,7 @@ function initAutocomplete() {
 
     var icon = {
         url: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Parking_icon.svg", //url
-        scaledSize: new google.maps.Size(50, 50),
+        scaledSize: new google.maps.Size(35, 35),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(0, 0)
     };
@@ -112,6 +112,18 @@ function initAutocomplete() {
     marker.addListener('click', toggleBounce);
 
 
+    /*marker = new google.maps.Marker({
+        icon: icon,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: {
+            lat: 55.864408, lng: -4.260743
+        }
+    });
+    marker.addListener('click', toggleBounce);*/
+
+
 }
 
 function toggleBounce() {
@@ -126,4 +138,3 @@ function toggleBounce() {
 
 
 }
-

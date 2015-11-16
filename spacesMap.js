@@ -1,5 +1,6 @@
 var context, mainCanvas;
 var parkingArray = [];
+var currentFloor = 0;
 
 //Create a new parking space and set it's availability to free
 ParkingSpace = function(x, y, width, height){
@@ -8,30 +9,41 @@ ParkingSpace = function(x, y, width, height){
     this.y = y;
     this.width = width;
     this.height = height;
-    this.free = true;
-    spaceFree('green', this);
+    spaceFree('green', this,parkingArray.length);
     return this;
 
 };
 
 window.onload = function () {
 
+    //Get the total amount of free spaces to display in the car park pop-up
+    getTotalFreeSpaces();
+
+    //Show the map of free spaces
     $("#parkingPage").on('pageshow', showMapsPage);
 
 };
 
-function showMapsPage(){
+//Show the map of free spaces
+function showMapsPage() {
 
     setUpCanvas();
+
     //Create 3 rows of parking spaces
     createSpacesRow(0);
     createSpacesRow((mainCanvas.width() / 5) * 2);
     createSpacesRow((mainCanvas.width() / 5) * 4);
 
-    getAjax("getSpaces", successParkingData);
+    //Find out which spaces are currently taken
+    getSpaces();
+
+    //Set functions to change floor
+    mainCanvas.on("swipeleft", getMaxFloors);
+    mainCanvas.on("swiperight", floorDown);
 
 }
-function setUpCanvas(){
+
+function setUpCanvas() {
 
     //Set up the canvas size to fit the screen
     var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -
@@ -41,39 +53,71 @@ function setUpCanvas(){
     var domCanvas = document.getElementById('mainCanvas');
     mainCanvas = $('#mainCanvas');
     domCanvas.width = $(window).width();
-    domCanvas.height = content;
+    domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-    //Fill the canvas with grey to illustrate the car park's roads
-    context.fillStyle = 'grey';
-    context.fillRect(0, 0, mainCanvas.width(), mainCanvas.height());
-
-    //Set up the swipe left and right functions to change floor
-    mainCanvas.on("swipeleft", floorDown);
-    mainCanvas.on("swiperight", floorUp);
-
 }
-//Create a row of six parking spaces
-function createSpacesRow(x){
 
-    for(var i = 0; i < 6; i ++){
+//Create a row of six parking spaces
+function createSpacesRow(x) {
+
+    for (var i = 0; i < 6; i++) {
         parkingArray.push(new ParkingSpace(x, (mainCanvas.height() / 5) * i, mainCanvas.width() / 5, mainCanvas.height() / 5));
     }
 
+    var road_arrow = new Image();
+    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
+    var road_arrow2 = new Image();
+    road_arrow2.src = "images/arrow.jpg";
+
+    if (x  == 0) {
+    road_arrow.onload = function () {
+
+            context.drawImage(road_arrow, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);}
+        }
+    else {
+
+        road_arrow2.onload = function () {
+            context.drawImage(road_arrow2, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);
+        }
+    }
 }
 
 //View parking spaces on the floor below
 function floorDown(){
 
-    spaceFree('green', parkingArray[1]);
-    spaceFree('red', parkingArray[14]);
+    if(currentFloor > 0) {
+        currentFloor--;
+        getSpaces();
+    }
+
 }
 
 //View parking spaces on the floor above
-function floorUp(){
+function floorUp(maxFloor){
 
-    spaceFree('green', parkingArray[14]);
-    spaceFree('red', parkingArray[1]);
+    if(currentFloor < maxFloor) {
+        currentFloor++;
+        getSpaces();
+    }
+
+}
+
+function getTotalFreeSpaces(){
+    getAjax("getTotalFreeSpaces", totalSpacesSuccess);
+}
+
+function totalSpacesSuccess(data){
+    data = JSON.parse(data);
+    $("#availSpacesPopup").text("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
+}
+
+function getSpaces(){
+    getAjax("getSpaces?floor=" + currentFloor, successParkingData);
+}
+
+function getMaxFloors(){
+    getAjax("getMaxFloors", floorUp);
 }
 
 function getAjax(urlEnd, successFunction){
@@ -91,39 +135,40 @@ function getAjax(urlEnd, successFunction){
 
 }
 
-function successParkingData(data){
+function successParkingData(data) {
+
+    document.getElementById("floorText").innerText = ("Floor " + currentFloor);
 
     data = JSON.parse(data);
 
     console.log(data);
-    for(var i = 0; i < data.length; i ++){
-        if(data[i] == 0){
-            spaceFree('green', parkingArray[i]);
+    for (var i = 0; i < data.length; i++) {
+        if (data[i] == 0) {
+            spaceFree('green', parkingArray[i],i);
         }
-        else{
-            spaceFree('red', parkingArray[i]);
+        else {
+            spaceFree('red', parkingArray[i],i);
+
+
         }
     }
+
 }
 
 //Change the colour of a space to indicate whether it is free (green) or taken (red)
-function spaceFree(colour, space){
+    function spaceFree(colour, space, index) {
 
-    context.fillStyle = colour;
-    context.strokeStyle = 'white';
-    context.strokeWidth = 5;
-    context.fillRect(space.x, space.y, space.width, space.height);
-    context.strokeRect(space.x, space.y, space.width, space.height);
+        context.fillStyle = colour;
+        context.strokeStyle = 'white';
+        context.strokeWidth = 5;
+        context.fillRect(space.x, space.y, space.width, space.height);
+        context.strokeRect(space.x, space.y, space.width, space.height);
+        context.strokeText(index+1, space.x + (space.width / 2), space.y + (space.height / 2));
+    }
 
-}
+    function successTestPost(data) {
+        console.log(data);
+        getSpaces();
+    }
 
-function testPost(colour, spaceIndex){
 
-        getAjax("putSpace?spaceIndex=" + spaceIndex + "&availability=" + (colour=='red'? 1: 0), successTestPost);
-
-}
-
-function successTestPost(data){
-    console.log(data);
-    getAjax("getSpaces", successParkingData);
-}

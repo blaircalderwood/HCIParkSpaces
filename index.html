@@ -33,30 +33,24 @@
             <h4 style="margin: 0 !important;">Glasgow Central Car Park</h4>
         </div>
 
-        <p>Available spaces - 8/10</p>
+        <p id="availSpacesPopup">Available spaces unavailable</p>
         <a data-role="button" href="#parkingPage">View Available Spaces</a>
     </div>
 
 </div>
 
 <div data-role="page" id="parkingPage">
-    <div data-role="header">
-        <a data-icon="home" data-iconpos="notext"></a>
 
-    </div>
+    <canvas id="mainCanvas"></canvas>
 
-    <div data-role="content">
-        <canvas id="mainCanvas"></canvas>
-    </div>
-
-    <div data-role="footer">
+    <div data-role="footer" style="margin: 0;">
         <div data-role="navbar" >
             <ul>
-        <li><a data-icon="arrow-l" >Floor Down</a></li>
-        <li><p align="center">Floor 1</p></li>
-        <li><a data-icon="arrow-r">Floor Up</a></li>
-                </ul>
-            </div>
+                <li><a data-icon="arrow-l" onclick="floorDown()">Floor Down</a></li>
+                <li><p id="floorText" align="center">Floor 1</p></li>
+                <li><a data-icon="arrow-r" onclick="getMaxFloors()">Floor Up</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 
