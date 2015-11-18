@@ -3,7 +3,7 @@ var parkingArray = [];
 var carPark = {};
 var carParkName = "Central Car Park";
 
-CarPark = function(name, maxFloors, freeSpaces, totalSpaces, parkingArray, spacesWide, spacesHigh){
+CarPark = function (name, maxFloors, freeSpaces, totalSpaces, parkingArray, spacesWide, spacesHigh) {
 
     this.name = name;
     this.maxFloors = maxFloors;
@@ -19,13 +19,13 @@ CarPark = function(name, maxFloors, freeSpaces, totalSpaces, parkingArray, space
 };
 
 //Create a new parking space and set it's availability to free
-ParkingSpace = function(x, y, width, height){
+ParkingSpace = function (x, y, width, height) {
 
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    spaceFree('green', this,parkingArray.length);
+    this.spaceFree('green', parkingArray.length);
     return this;
 
 };
@@ -33,7 +33,7 @@ ParkingSpace = function(x, y, width, height){
 window.onload = function () {
 
     //TO DO: fix this - not best way of doing it
-    if($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
+    if ($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
 
     //Show the map of free spaces
     $("#parkingPage").on('pageshow', showMapsPage);
@@ -44,9 +44,20 @@ window.onload = function () {
 function showMapsPage() {
 
     setUpCanvas();
+    getCarPark(carParkName);
 
-    getAjax("getCarPark?name=" + carParkName, successCarPark);
+}
 
+function getCarPark() {
+    if (carPark == {} || carPark.name != carParkName) {
+        getAjax("getCarPark?name=" + carParkName, successCarPark);
+    }
+    else if(mainCanvas){
+        carPark.show();
+    }
+    else{
+        carPark.displayFreeSpaces();
+    }
 }
 
 function setUpCanvas() {
@@ -78,11 +89,12 @@ function createSpacesRow(x) {
     var road_arrow2 = new Image();
     road_arrow2.src = "images/arrow.jpg";
 
-    if (x  == 0) {
-    road_arrow.onload = function () {
+    if (x == 0) {
+        road_arrow.onload = function () {
 
-            context.drawImage(road_arrow, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);}
+            context.drawImage(road_arrow, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);
         }
+    }
     else {
 
         road_arrow2.onload = function () {
@@ -91,16 +103,16 @@ function createSpacesRow(x) {
     }
 }
 
-function successCarPark(data){
+function successCarPark(data) {
 
-    if(data == "Not Found"){
+    if (data == "Not Found") {
         networkError();
     }
     else {
 
         data = JSON.parse(data);
 
-        var maxFloors = data.parkingArray.length;
+        var maxFloors = data.parkingArray.length - 1;
         var freeSpaces = 0;
         var totalSpaces = 0;
 
@@ -115,14 +127,23 @@ function successCarPark(data){
 
         carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, data.spacesHigh);
 
-        carPark.show();
+        if (mainCanvas) carPark.show();
+        else carPark.displayFreeSpaces();
     }
 
 }
 
-CarPark.prototype.show = function(){
+CarPark.prototype.displayFreeSpaces = function () {
 
-    for(var i = 0; i <= 4; i += 2){
+    document.getElementById("availSpacesPopup").innerText = "Available spaces: " +
+        this.freeSpaces + "/" + this.totalSpaces;
+    carParkName = carPark.name;
+
+};
+
+CarPark.prototype.show = function () {
+
+    for (var i = 0; i <= 4; i += 2) {
         createSpacesRow((mainCanvas.width() / 5) * i)
     }
 
@@ -136,9 +157,9 @@ CarPark.prototype.show = function(){
 };
 
 //View parking spaces on the floor below
-CarPark.prototype.floorDown = function(){
+CarPark.prototype.floorDown = function () {
 
-    if(this.currentFloor > 0) {
+    if (this.currentFloor > 0) {
         this.currentFloor--;
         this.displaySpaces();
     }
@@ -146,18 +167,18 @@ CarPark.prototype.floorDown = function(){
 };
 
 //View parking spaces on the floor above
-CarPark.prototype.floorUp = function(maxFloor){
+CarPark.prototype.floorUp = function (maxFloor) {
 
-    if(this.currentFloor < this.maxFloors) {
+    if (this.currentFloor < this.maxFloors) {
         this.currentFloor++;
         this.displaySpaces();
     }
 
 };
 
-CarPark.prototype.displaySpaces = function(){
+CarPark.prototype.displaySpaces = function () {
 
-    if(this !== {}){
+    if (this !== {}) {
 
         //TO DO: Change current floor to this.currentFloor
         document.getElementById("floorText").innerText = ("Floor " + this.currentFloor);
@@ -166,25 +187,25 @@ CarPark.prototype.displaySpaces = function(){
 
         for (var i = 0; i < this.parkingArray[this.currentFloor].length; i++) {
             if (this.parkingArray[this.currentFloor][i] == 0) {
-                spaceFree('green', parkingArray[i],i);
+                parkingArray[i].spaceFree('green', i);
             }
             else {
-                spaceFree('red', parkingArray[i],i);
+                parkingArray[i].spaceFree('red', i);
 
             }
         }
 
     }
-    else{
+    else {
         networkError();
     }
 };
 
-function networkError(){
+function networkError() {
     alert("Car park could not be found. Please check your network settings and try again.");
 }
 
-function getAjax(urlEnd, successFunction){
+function getAjax(urlEnd, successFunction) {
 
     $.ajax({
         type: "GET",
@@ -200,13 +221,14 @@ function getAjax(urlEnd, successFunction){
 }
 
 //Change the colour of a space to indicate whether it is free (green) or taken (red)
-    function spaceFree(colour, space, index) {
+ParkingSpace.prototype.spaceFree = function(colour, index) {
 
-        context.fillStyle = colour;
-        context.strokeStyle = 'white';
-        context.strokeWidth = 5;
-        context.fillRect(space.x, space.y, space.width, space.height);
-        context.strokeRect(space.x, space.y, space.width, space.height);
-        context.strokeText(index+1, space.x + (space.width / 2), space.y + (space.height / 2));
-    }
+    context.fillStyle = colour;
+    context.strokeStyle = 'white';
+    context.strokeWidth = 5;
+    context.fillRect(this.x, this.y, this.width, this.height);
+    context.strokeRect(this.x, this.y, this.width, this.height);
+    context.strokeText(index, this.x + (this.width / 2), this.y + (this.height / 2));
+
+};
 

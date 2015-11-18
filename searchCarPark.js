@@ -129,6 +129,7 @@ function initAutocomplete() {
 function toggleBounce() {
 
     $("#popupBasic").popup("open");
+    getCarPark(document.getElementById("carParkName").innerText);
 
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
