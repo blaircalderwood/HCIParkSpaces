@@ -8,12 +8,15 @@
     <script src="jquery.mobile-1.4.1.js"></script>
     <link rel="stylesheet" href="jquery.mobile-1.4.1.min.css">
     <link rel="stylesheet" href="jquery.mobile.icons.min.css">
-    <link rel="stylesheet" href="parkingApp.min.css" />
+    <link rel="stylesheet" href="parkingApp.min.css"/>
     <link rel="stylesheet" href="styles.css">
     <script src="spacesMap.js"></script>
     <script src="searchCarPark.js"></script>
+    <script src="CarParkPrototypes.js"></script>
+    <script src="ParkingSpacePrototypes.js"></script>
 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZXYYXkHGSr5jDxQ1__S4K7fCTLQQUzpM&libraries=places&callback=initAutocomplete"
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZXYYXkHGSr5jDxQ1__S4K7fCTLQQUzpM&libraries=places&callback=initAutocomplete"
             async defer></script>
 
 </head>
@@ -44,7 +47,7 @@
     <canvas id="mainCanvas"></canvas>
 
     <div data-role="footer" style="margin: 0;">
-        <div data-role="navbar" >
+        <div data-role="navbar">
             <ul>
                 <li><a id="floorDownButton" data-icon="arrow-l" onclick="carPark.floorDown()">Floor Down</a></li>
                 <li><p id="floorText" align="center">Floor 1</p></li>
