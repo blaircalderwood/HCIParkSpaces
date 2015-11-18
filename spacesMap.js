@@ -2,6 +2,7 @@ var context, mainCanvas;
 var parkingArray = [];
 var carPark = {};
 var carParkName;
+var road_arrow;
 
 window.onload = function () {
 
@@ -16,12 +17,18 @@ window.onload = function () {
 //Show the map of free spaces
 function showMapsPage() {
 
-    setUpCanvas();
-    if(!carParkName){
-        if(localStorage.getItem("carParkName"))carParkName = localStorage.getItem("carParkName");
-        else alert("No car park found. Please reload the website and start again.")
+    road_arrow = new Image();
+    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
+
+    road_arrow.onload = function () {
+        setUpCanvas();
+        if (!carParkName) {
+            if (localStorage.getItem("carParkName"))carParkName = localStorage.getItem("carParkName");
+            else alert("No car park found. Please reload the website and start again.")
+        }
+        getCarPark(carParkName);
+
     }
-    getCarPark(carParkName);
 
 }
 

@@ -5,7 +5,8 @@ CarPark = function (name, maxFloors, freeSpaces, totalSpaces, parkingArray, spac
     this.freeSpaces = freeSpaces;
     this.totalSpaces = totalSpaces;
     this.parkingArray = parkingArray;
-    this.spacesWide = spacesWide;
+    //Find how many roads are needed i.e. follow spaces - road - spaces pattern
+    this.spacesWide = spacesWide + (spacesWide - 1);
     this.spacesHigh = this.parkingArray[0].length / spacesWide;
     this.currentFloor = 0;
 
@@ -23,12 +24,9 @@ CarPark.prototype.displayFreeSpaces = function () {
 
 CarPark.prototype.show = function () {
 
-    //Find how many roads are needed i.e. follow spaces - road - spaces pattern
-    var spacesWithRoads = this.spacesWide + (this.spacesWide - 1);
-
-    for (var i = 0; i < spacesWithRoads; i += 2) {
-        this.createSpacesRow((mainCanvas.width() / spacesWithRoads) * i, spacesWithRoads);
-        this.putRoad((mainCanvas.width() / spacesWithRoads) * i, spacesWithRoads);
+    for (var i = 0; i < this.spacesWide; i += 2) {
+        this.createSpacesRow((mainCanvas.width() / this.spacesWide) * i);
+        this.putRoad(i);
     }
 
     //Find out which spaces are currently taken
@@ -41,36 +39,40 @@ CarPark.prototype.show = function () {
 };
 
 //Create a row of six parking spaces
-CarPark.prototype.createSpacesRow = function (x, spacesWithRoads) {
+CarPark.prototype.createSpacesRow = function (x) {
 
     for (var i = 0; i < this.spacesHigh; i++) {
         parkingArray.push(new ParkingSpace(x, (mainCanvas.height() / this.spacesHigh) * i,
-            mainCanvas.width() / spacesWithRoads, mainCanvas.height() / this.spacesHigh));
+            mainCanvas.width() / this.spacesWide, mainCanvas.height() / this.spacesHigh));
     }
 
 };
 
-CarPark.prototype.putRoad = function (x, spacesWithRoads) {
+CarPark.prototype.putRoad = function (i) {
 
-    var road_arrow = new Image();
-    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
-    var road_arrow2 = new Image();
-    road_arrow2.src = "images/arrow.jpg";
+    var x = (mainCanvas.width() / this.spacesWide) * (i + 1);
+    var spaceWidth = mainCanvas.width() / this.spacesWide;
 
-    if (x == 0) {
-        road_arrow.onload = function () {
+    console.log(i);
+        if (i % 4 === 0) {
 
-            context.drawImage(road_arrow, x + mainCanvas.width() / spacesWithRoads, 0,
-                mainCanvas.width() / spacesWithRoads, 800);
+            context.drawImage(road_arrow, x, 0, spaceWidth, mainCanvas.height());
         }
-    }
-    else {
 
-        road_arrow2.onload = function () {
-            context.drawImage(road_arrow2, x + mainCanvas.width() / spacesWithRoads, 0,
-                mainCanvas.width() / spacesWithRoads, 800);
+        else {
+
+            var halfWidth = spaceWidth / 2;
+            var halfHeight = mainCanvas.height() / 2;
+
+            console.log(x + halfWidth);
+
+            context.translate(x + halfWidth, halfHeight);
+            context.rotate(Math.PI);
+            context.drawImage(road_arrow, -halfWidth, - halfHeight, spaceWidth, mainCanvas.height());
+            context.rotate(-Math.PI);
+            context.translate(-(x + halfWidth), -halfHeight);
+
         }
-    }
 
 };
 
