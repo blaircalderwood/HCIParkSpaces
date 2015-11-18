@@ -1,7 +1,7 @@
 var context, mainCanvas;
 var parkingArray = [];
 var carPark = {};
-var carParkName = "Central Car Park";
+var carParkName;
 
 window.onload = function () {
 
@@ -17,13 +17,22 @@ window.onload = function () {
 function showMapsPage() {
 
     setUpCanvas();
+    if(!carParkName){
+        if(localStorage.getItem("carParkName"))carParkName = localStorage.getItem("carParkName");
+        else alert("No car park found. Please reload the website and start again.")
+    }
     getCarPark(carParkName);
 
 }
 
-function getCarPark() {
-    if (carPark == {} || carPark.name != carParkName) {
-        getAjax("getCarPark?name=" + carParkName, successCarPark);
+function getCarPark(name) {
+
+    localStorage.setItem("carParkName", name);
+
+    carParkName = name;
+
+    if (carPark == {} || carPark.name != name) {
+        getAjax("getCarPark?name=" + name, successCarPark);
     }
     else if(mainCanvas){
         carPark.show();
@@ -31,6 +40,7 @@ function getCarPark() {
     else{
         carPark.displayFreeSpaces();
     }
+
 }
 
 function setUpCanvas() {
@@ -48,32 +58,6 @@ function setUpCanvas() {
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
-}
-
-//Create a row of six parking spaces
-function createSpacesRow(x) {
-
-    for (var i = 0; i < 6; i++) {
-        parkingArray.push(new ParkingSpace(x, (mainCanvas.height() / 5) * i, mainCanvas.width() / 5, mainCanvas.height() / 5));
-    }
-
-    var road_arrow = new Image();
-    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
-    var road_arrow2 = new Image();
-    road_arrow2.src = "images/arrow.jpg";
-
-    if (x == 0) {
-        road_arrow.onload = function () {
-
-            context.drawImage(road_arrow, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);
-        }
-    }
-    else {
-
-        road_arrow2.onload = function () {
-            context.drawImage(road_arrow2, x + mainCanvas.width() / 5, 0, mainCanvas.width() / 5, 800);
-        }
-    }
 }
 
 function successCarPark(data) {
@@ -98,7 +82,7 @@ function successCarPark(data) {
             }
         }
 
-        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, data.spacesHigh);
+        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide);
 
         if (mainCanvas) carPark.show();
         else carPark.displayFreeSpaces();

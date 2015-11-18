@@ -6,8 +6,7 @@ function showPosition(position) {
     "<br>Longitude: " + position.coords.longitude;
 }
 
-// This example adds a search box to a map, using the Google Place Autocomplete
-// feature. People can enter geographical searches. The search box will return a
+// Created by following the tutorial at https://developers.google.com/maps/documentation/javascript/tutorial
 
 
 function initAutocomplete() {
