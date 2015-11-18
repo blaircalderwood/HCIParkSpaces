@@ -89,7 +89,7 @@ function successCarPark(data) {
         var freeSpaces = 0;
         var totalSpaces = 0;
 
-        for (var i = 0; i < maxFloors; i++) {
+        for (var i = 0; i < data.parkingArray.length; i++) {
             for (var j = 0; j < data.parkingArray[i].length; j++) {
                 totalSpaces++;
                 if (data.parkingArray[i][j] == 0) {
