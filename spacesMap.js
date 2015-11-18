@@ -1,6 +1,22 @@
 var context, mainCanvas;
 var parkingArray = [];
-var currentFloor = 0;
+var carPark = {};
+var carParkName = "Central Car Park";
+
+CarPark = function(name, maxFloors, freeSpaces, totalSpaces, parkingArray, spacesWide, spacesHigh){
+
+    this.name = name;
+    this.maxFloors = maxFloors;
+    this.freeSpaces = freeSpaces;
+    this.totalSpaces = totalSpaces;
+    this.parkingArray = parkingArray;
+    this.spacesWide = spacesWide;
+    this.spacesHigh = spacesHigh;
+    this.currentFloor = 0;
+
+    return this;
+
+};
 
 //Create a new parking space and set it's availability to free
 ParkingSpace = function(x, y, width, height){
@@ -16,11 +32,9 @@ ParkingSpace = function(x, y, width, height){
 
 window.onload = function () {
 
-    //Get the total amount of free spaces to display in the car park pop-up
-    getTotalFreeSpaces();
-
     //TO DO: fix this - not best way of doing it
     if($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
+
     //Show the map of free spaces
     $("#parkingPage").on('pageshow', showMapsPage);
 
@@ -31,26 +45,18 @@ function showMapsPage() {
 
     setUpCanvas();
 
-    //Create 3 rows of parking spaces
-    createSpacesRow(0);
-    createSpacesRow((mainCanvas.width() / 5) * 2);
-    createSpacesRow((mainCanvas.width() / 5) * 4);
-
-    //Find out which spaces are currently taken
-    getSpaces();
-
-    //Set functions to change floor
-    mainCanvas.on("swipeleft", getMaxFloors);
-    mainCanvas.on("swiperight", floorDown);
+    getAjax("getCarPark?name=" + carParkName, successCarPark);
 
 }
 
 function setUpCanvas() {
 
+    var uiContent = $('.ui-content');
+
     //Set up the canvas size to fit the screen
     var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -
-        $(".ui-footer").outerHeight() - $(".ui-content").outerHeight() + $(".ui-content").height();
-    $('.ui-content').height(content);
+        $(".ui-footer").outerHeight() - uiContent.outerHeight() + uiContent.height();
+    uiContent.height(content);
 
     var domCanvas = document.getElementById('mainCanvas');
     mainCanvas = $('#mainCanvas');
@@ -85,41 +91,97 @@ function createSpacesRow(x) {
     }
 }
 
-//View parking spaces on the floor below
-function floorDown(){
+function successCarPark(data){
 
-    if(currentFloor > 0) {
-        currentFloor--;
-        getSpaces();
+    if(data == "Not Found"){
+        networkError();
+    }
+    else {
+
+        data = JSON.parse(data);
+
+        var maxFloors = data.parkingArray.length;
+        var freeSpaces = 0;
+        var totalSpaces = 0;
+
+        for (var i = 0; i < maxFloors; i++) {
+            for (var j = 0; j < data.parkingArray[i].length; j++) {
+                totalSpaces++;
+                if (data.parkingArray[i][j] == 0) {
+                    freeSpaces++;
+                }
+            }
+        }
+
+        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, data.spacesHigh);
+
+        carPark.show();
     }
 
 }
 
-function getMaxFloors(){
-    getAjax("getMaxFloors", floorUp);
-}
+CarPark.prototype.show = function(){
+
+    for(var i = 0; i <= 4; i += 2){
+        createSpacesRow((mainCanvas.width() / 5) * i)
+    }
+
+    //Find out which spaces are currently taken
+    this.displaySpaces();
+
+    //Set functions to change floor
+    mainCanvas.on("swipeleft", this.floorUp);
+    mainCanvas.on("swiperight", this.floorDown);
+
+};
+
+//View parking spaces on the floor below
+CarPark.prototype.floorDown = function(){
+
+    if(this.currentFloor > 0) {
+        this.currentFloor--;
+        this.displaySpaces();
+    }
+
+};
 
 //View parking spaces on the floor above
-function floorUp(maxFloor){
+CarPark.prototype.floorUp = function(maxFloor){
 
-    if(currentFloor < maxFloor) {
-        currentFloor++;
-        getSpaces();
+    if(this.currentFloor < this.maxFloors) {
+        this.currentFloor++;
+        this.displaySpaces();
     }
 
-}
+};
 
-function getTotalFreeSpaces(){
-    getAjax("getTotalFreeSpaces", totalSpacesSuccess);
-}
+CarPark.prototype.displaySpaces = function(){
 
-function totalSpacesSuccess(data){
-    data = JSON.parse(data);
-    $("#availSpacesPopup").text("Available spaces: " + data.freeSpaces + "/" + data.totalSpaces);
-}
+    if(this !== {}){
 
-function getSpaces(){
-    getAjax("getSpaces?floor=" + currentFloor, successParkingData);
+        //TO DO: Change current floor to this.currentFloor
+        document.getElementById("floorText").innerText = ("Floor " + this.currentFloor);
+
+        localStorage.setItem('parkingArray', this);
+
+        for (var i = 0; i < this.parkingArray[this.currentFloor].length; i++) {
+            if (this.parkingArray[this.currentFloor][i] == 0) {
+                spaceFree('green', parkingArray[i],i);
+            }
+            else {
+                spaceFree('red', parkingArray[i],i);
+
+            }
+        }
+
+    }
+    else{
+        networkError();
+    }
+};
+
+function networkError(){
+    alert("Car park could not be found. Please check your network settings and try again.");
 }
 
 function getAjax(urlEnd, successFunction){
@@ -131,31 +193,9 @@ function getAjax(urlEnd, successFunction){
         contentType: "application/json",
         dataType: 'jsonp',
         success: successFunction || function () {
-            console.log("Recieved data");
+            console.log("Received data");
         }
     });
-
-}
-
-function successParkingData(data) {
-
-    document.getElementById("floorText").innerText = ("Floor " + currentFloor);
-
-    localStorage.setItem('parkingArray', data);
-
-    data = JSON.parse(data);
-
-    console.log(data);
-    for (var i = 0; i < data.length; i++) {
-        if (data[i] == 0) {
-            spaceFree('green', parkingArray[i],i);
-        }
-        else {
-            spaceFree('red', parkingArray[i],i);
-
-
-        }
-    }
 
 }
 
@@ -169,10 +209,4 @@ function successParkingData(data) {
         context.strokeRect(space.x, space.y, space.width, space.height);
         context.strokeText(index+1, space.x + (space.width / 2), space.y + (space.height / 2));
     }
-
-    function successTestPost(data) {
-        console.log(data);
-        getSpaces();
-    }
-
 
