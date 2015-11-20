@@ -18,9 +18,7 @@ window.onload = function () {
 function showMapsPage() {
 
     road_arrow = new Image();
-    //TO DO: find higher res img (or make one)
-    road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
-
+    road_arrow.src = "Images/arrow.png";
     road_arrow.onload = function () {
         setUpCanvas();
 
@@ -125,8 +123,25 @@ function getAjax(urlEnd, successFunction) {
 
 }
 
+//Test functions not implemented in final version but have been included to show certain tests used
+
 function testPutSpaces(availability){
 
     getAjax("putSpace?name=Byres%20Road%20Car%20Park&floor=0&spaceIndex=5&availability=" + availability)
+}
+
+function generateRandomParking(floors, spaces){
+
+    var newParkingArray = [];
+
+    for(var i = 0; i < floors; i ++){
+        newParkingArray[i] = [];
+        for(var j = 0; j < spaces; j ++){
+            newParkingArray[i][j] = Math.round(Math.random());
+        }
+    }
+
+    return JSON.stringify(newParkingArray);
+
 }
 
