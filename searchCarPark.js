@@ -1,5 +1,16 @@
 var x = document.getElementById("demo");
 var map;
+var markerArray = [];
+
+SelectedMarker = function(name, lat, lng){
+
+    this.carParkName = name;
+    this.lat = lat;
+    this.lng = lng;
+
+    return this;
+
+};
 
 function showPosition(position) {
     x.innerHTML = "Latitude: " + position.coords.latitude +
@@ -99,42 +110,55 @@ function initAutocomplete() {
         anchor: new google.maps.Point(0, 0)
     };
 
-    marker = new google.maps.Marker({
-        icon: icon,
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        position: {
-            lat: 55.864408, lng: -4.260743
+    getAjax("carParkPositions", placeMarkers);
+
+    function placeMarkers(data){
+
+        markerArray = JSON.parse(data);
+
+        for(var i = 0; i < markerArray.length; i ++) {
+
+            marker = new google.maps.Marker({
+                icon: icon,
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                position: {
+                    lat: markerArray[i].lat, lng: markerArray[i].lng
+                }
+            });
+
+            marker.addListener('click', click);
+
         }
-    });
-    marker.addListener('click', toggleBounce);
 
-
-    /*marker = new google.maps.Marker({
-        icon: icon,
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        position: {
-            lat: 55.864408, lng: -4.260743
-        }
-    });
-    marker.addListener('click', toggleBounce);*/
-
+    }
 
 }
 
-function toggleBounce() {
+function click(){
 
+    var lat = Math.round(this.position.lat() * 1000000) / 1000000;
+    var lng = Math.round(this.position.lng() * 1000000) / 1000000;
+
+    var name;
+    for(var i = 0; i < markerArray.length; i ++){
+        if(lat == markerArray[i].lat && lng == markerArray[i].lng){
+            name = markerArray[i].name;
+            break;
+        }
+    }
+
+    console.log(name);
+
+    document.getElementById("carParkName").innerText = name;
     $("#popupBasic").popup("open");
-    getCarPark(document.getElementById("carParkName").innerText);
+    getCarPark(name);
 
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
     } else {
         marker.setAnimation(google.maps.Animation.BOUNCE);
     }
-
 
 }

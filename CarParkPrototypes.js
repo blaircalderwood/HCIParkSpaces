@@ -1,4 +1,4 @@
-CarPark = function (name, maxFloors, freeSpaces, totalSpaces, parkingArray, spacesWide) {
+CarPark = function (name, maxFloors, freeSpaces, totalSpaces, parkingArray, spacesWide, currentFloor) {
 
     this.name = name;
     this.maxFloors = maxFloors;
@@ -8,7 +8,7 @@ CarPark = function (name, maxFloors, freeSpaces, totalSpaces, parkingArray, spac
     //Find how many roads are needed i.e. follow spaces - road - spaces pattern
     this.spacesWide = spacesWide + (spacesWide - 1);
     this.spacesHigh = this.parkingArray[0].length / spacesWide;
-    this.currentFloor = 0;
+    this.currentFloor = currentFloor;
 
     return this;
 
@@ -63,8 +63,6 @@ CarPark.prototype.putRoad = function (i) {
             var halfWidth = spaceWidth / 2;
             var halfHeight = mainCanvas.height() / 2;
 
-            console.log(x + halfWidth);
-
             context.translate(x + halfWidth, halfHeight);
             context.rotate(Math.PI);
             context.drawImage(road_arrow, -halfWidth, - halfHeight, spaceWidth, mainCanvas.height());
@@ -98,12 +96,9 @@ CarPark.prototype.floorUp = function () {
 
 CarPark.prototype.displaySpaces = function () {
 
+    document.getElementById("floorText").innerText = ("Floor " + this.currentFloor);
+
     if (this !== {}) {
-
-        //TO DO: Change current floor to this.currentFloor
-        document.getElementById("floorText").innerText = ("Floor " + this.currentFloor);
-
-        localStorage.setItem('parkingArray', this);
 
         for (var i = 0; i < this.parkingArray[this.currentFloor].length; i++) {
             if (this.parkingArray[this.currentFloor][i] == 0) {
@@ -111,7 +106,6 @@ CarPark.prototype.displaySpaces = function () {
             }
             else {
                 parkingArray[i].spaceFree('red', i);
-
             }
         }
 

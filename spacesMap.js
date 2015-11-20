@@ -23,10 +23,7 @@ function showMapsPage() {
 
     road_arrow.onload = function () {
         setUpCanvas();
-        if (!carParkName) {
-            if (localStorage.getItem("carParkName"))carParkName = localStorage.getItem("carParkName");
-            else alert("No car park found. Please reload the website and start again.")
-        }
+
         getCarPark(carParkName);
 
     }
@@ -35,12 +32,19 @@ function showMapsPage() {
 
 function getCarPark(name) {
 
-    localStorage.setItem("carParkName", name);
+    if (!name) {
+        if (localStorage.getItem("carParkName")){
+            carParkName = localStorage.getItem("carParkName");
+        }
+        else alert("No car park found. Please reload the website and start again.")
+    }
+    else {
+        carParkName = name;
+        localStorage.setItem("carParkName", carParkName);
+    }
 
-    carParkName = name;
-
-    if (carPark == {} || carPark.name != name) {
-        getAjax("getCarPark?name=" + name, successCarPark);
+    if (carPark == {} || carPark.name != carParkName) {
+        getAjax("getCarPark?name=" + carParkName, successCarPark);
     }
     else if(mainCanvas){
         carPark.show();
@@ -48,6 +52,10 @@ function getCarPark(name) {
     else{
         carPark.displayFreeSpaces();
     }
+
+    setInterval(function() {
+        getAjax("getCarPark?name=" + carParkName, successCarPark);
+    }, 1000);
 
 }
 
@@ -90,7 +98,7 @@ function successCarPark(data) {
             }
         }
 
-        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide);
+        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, carPark.currentFloor || 0);
 
         if (mainCanvas) carPark.show();
         else carPark.displayFreeSpaces();
@@ -115,10 +123,10 @@ function getAjax(urlEnd, successFunction) {
         }
     });
 
-    function testPutSpaces(){
+}
 
-        getAjax("putSpace?name=Byres%20Road%20Car%20Park&floor=0&spaceIndex=5&availability=0")
-    }
+function testPutSpaces(availability){
 
+    getAjax("putSpace?name=Byres%20Road%20Car%20Park&floor=0&spaceIndex=5&availability=" + availability)
 }
 
