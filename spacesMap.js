@@ -4,9 +4,12 @@ var carPark = {};
 var carParkName;
 var road_arrow;
 
+/**Perform on window load
+ *
+ */
 window.onload = function () {
 
-    //TO DO: fix this - not best way of doing it
+    //Check if reloaded page is the car park space map (fixes an issue that prevented loading of space map)
     if ($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
 
     //Show the map of free spaces
@@ -14,7 +17,9 @@ window.onload = function () {
 
 };
 
-//Show the map of free spaces
+/**Load the arrow image and the space map
+ *
+ */
 function showMapsPage() {
 
     road_arrow = new Image();
@@ -28,22 +33,30 @@ function showMapsPage() {
 
 }
 
+/**Get the car park details from the server
+ *
+ * @param name - the name of the car park (e.g. "Byres Road Car Park")
+ */
 function getCarPark(name) {
 
+    //If no name is passed in then the user has reloaded the page - use the last known car park name
     if (!name) {
         if (localStorage.getItem("carParkName")){
             carParkName = localStorage.getItem("carParkName");
         }
         else alert("No car park found. Please reload the website and start again.")
     }
+    //If a name is found save it to local storage in case user reloads page
     else {
         carParkName = name;
         localStorage.setItem("carParkName", carParkName);
     }
 
+    //Get the car park details from the server
     if (carPark == {} || carPark.name != carParkName) {
         getAjax("getCarPark?name=" + carParkName, successCarPark);
     }
+    //If the car park has already been loaded show it
     else if(mainCanvas){
         carPark.show();
     }
@@ -51,12 +64,16 @@ function getCarPark(name) {
         carPark.displayFreeSpaces();
     }
 
+    //Check for changed space maps (e.g. a space has change from taken to free) every second
     setInterval(function() {
         getAjax("getCarPark?name=" + carParkName, successCarPark);
     }, 1000);
 
 }
 
+/**Load the map canvas from the DOM
+ *
+ */
 function setUpCanvas() {
 
     var uiContent = $('.ui-content');
@@ -74,6 +91,10 @@ function setUpCanvas() {
 
 }
 
+/**Create a new CarPark object with details retrieved from the server
+ *
+ * @param data - The data recieved from the server
+ */
 function successCarPark(data) {
 
     if (data == "Not Found") {
