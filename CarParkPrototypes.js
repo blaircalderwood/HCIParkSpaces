@@ -53,7 +53,6 @@ CarPark.prototype.putRoad = function (i) {
     var x = (mainCanvas.width() / this.spacesWide) * (i + 1);
     var spaceWidth = mainCanvas.width() / this.spacesWide;
 
-    console.log(i);
         if (i % 4 === 0) {
 
             context.drawImage(road_arrow, x, 0, spaceWidth, mainCanvas.height());

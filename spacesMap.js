@@ -18,6 +18,7 @@ window.onload = function () {
 function showMapsPage() {
 
     road_arrow = new Image();
+    //TO DO: find higher res img (or make one)
     road_arrow.src = 'http://thumbs.dreamstime.com/t/arrow-road-pointing-straight-ahead-painted-white-traffic-sign-tarred-copyspace-32419741.jpg';
 
     road_arrow.onload = function () {
@@ -113,6 +114,11 @@ function getAjax(urlEnd, successFunction) {
             console.log("Received data");
         }
     });
+
+    function testPutSpaces(){
+
+        getAjax("putSpace?name=Byres%20Road%20Car%20Park&floor=0&spaceIndex=5&availability=0")
+    }
 
 }
 
