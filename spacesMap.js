@@ -56,13 +56,6 @@ function getCarPark(name) {
     if (carPark == {} || carPark.name != carParkName) {
         getAjax("getCarPark?name=" + carParkName, successCarPark);
     }
-    //If the car park has already been loaded show it
-    else if(mainCanvas){
-        carPark.show();
-    }
-    else{
-        carPark.displayFreeSpaces();
-    }
 
     //Check for changed space maps (e.g. a space has change from taken to free) every second
     setInterval(function() {
@@ -101,6 +94,8 @@ function setUpCanvas() {
  */
 function successCarPark(data) {
 
+    parkingArray = [];
+
     if (data == "Not Found") {
         networkError();
     }
@@ -123,7 +118,7 @@ function successCarPark(data) {
 
         carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, carPark.currentFloor || 0);
 
-        if (mainCanvas) carPark.show();
+        if ($(location).attr('href').indexOf("#parkingPage") !== -1) carPark.show();
         else carPark.displayFreeSpaces();
     }
 

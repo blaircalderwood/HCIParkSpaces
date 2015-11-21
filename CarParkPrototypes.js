@@ -50,7 +50,6 @@ CarPark.prototype.putRoad = function (i) {
     var spaceWidth = mainCanvas.width() / this.spacesWide;
 
         if (i % 4 === 0) {
-
             context.drawImage(road_arrow, x, 0, spaceWidth, mainCanvas.height());
         }
 
@@ -68,7 +67,6 @@ CarPark.prototype.putRoad = function (i) {
         }
 
 };
-
 
 //View parking spaces on the floor below
 CarPark.prototype.floorDown = function () {

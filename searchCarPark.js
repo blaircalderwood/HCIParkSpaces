@@ -149,11 +149,12 @@ function click(){
         }
     }
 
+    getCarPark(name);
+
     console.log(name);
 
     document.getElementById("carParkName").innerText = name;
     $("#popupBasic").popup("open");
-    getCarPark(name);
 
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
