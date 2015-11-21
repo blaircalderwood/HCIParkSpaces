@@ -128,7 +128,7 @@ function successCarPark(data) {
 function networkError() {
     alert("Car park could not be found. Please check your network settings and try again.");
 }
-//
+
 function getAjax(urlEnd, successFunction) {
 
     $.ajax({
