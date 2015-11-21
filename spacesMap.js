@@ -23,7 +23,7 @@ window.onload = function () {
 function showMapsPage() {
 
     road_arrow = new Image();
-    road_arrow.src = "Images/arrow.png";
+    road_arrow.src = "images/arrow.png";
     road_arrow.onload = function () {
         setUpCanvas();
 
