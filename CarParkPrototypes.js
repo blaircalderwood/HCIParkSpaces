@@ -32,10 +32,6 @@ CarPark.prototype.show = function () {
     //Find out which spaces are currently taken
     this.displaySpaces();
 
-    //Set functions to change floor
-    mainCanvas.on("swipeleft", this.floorUp);
-    mainCanvas.on("swiperight", this.floorDown);
-
 };
 
 //Create a row of six parking spaces

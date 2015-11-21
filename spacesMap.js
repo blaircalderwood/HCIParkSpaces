@@ -89,6 +89,10 @@ function setUpCanvas() {
     domCanvas.height = content * 0.95;
     context = mainCanvas[0].getContext('2d');
 
+    //Set functions to change floor
+    mainCanvas.on("swipeleft", this.floorUp);
+    mainCanvas.on("swiperight", this.floorDown);
+
 }
 
 /**Create a new CarPark object with details retrieved from the server
