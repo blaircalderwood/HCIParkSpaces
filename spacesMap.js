@@ -161,7 +161,7 @@ function testPutSpaces(availability){
 /**Used in development to generate an array of randomly placed 1s and 0s to simulate a real car park
  *
  * @param floors - The amount of floors in the car park
- * @param spaces = The amount of spaces on each floor
+ * @param spaces - The amount of spaces on each floor
  */
 function generateRandomParking(floors, spaces){
 
