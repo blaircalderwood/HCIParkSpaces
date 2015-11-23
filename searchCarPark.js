@@ -2,6 +2,14 @@ var x = document.getElementById("demo");
 var map;
 var markerArray = [];
 
+/**Create a new SelectedMarker object
+ *
+ * @param name - The name of the marker (car park name
+ * @param lat - The latitude in which the marker will be displayed
+ * @param lng - The longitude in which the marker will be displayed
+ * @returns {SelectedMarker}
+ * @constructor
+ */
 SelectedMarker = function(name, lat, lng){
 
     this.carParkName = name;
@@ -12,17 +20,17 @@ SelectedMarker = function(name, lat, lng){
 
 };
 
-function showPosition(position) {
-    x.innerHTML = "Latitude: " + position.coords.latitude +
-    "<br>Longitude: " + position.coords.longitude;
-}
-
 // Created by following the tutorial at https://developers.google.com/maps/documentation/javascript/tutorial
 
+/**Called when the Google map has been successfully retrieved from the server
+ *
+ */
+function gMapLoaded() {
 
-function initAutocomplete() {
-
+    // Show the loading sign until the user's current position is displayed on the map
     $.mobile.loading("show");
+
+    // Create a new Google Map object
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -33.8688, lng: 151.2195},
         zoom: 15,
@@ -30,14 +38,14 @@ function initAutocomplete() {
 
     });
 
-
+    // Display the user's current position on the map
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(setPosition);
     } else {
-        x.innerHTML = "Geolocation is not supported by this browser.";
+        x.innerHTML = "Geolocation is not supported by this device.";
     }
 
-    // Create the search box and link it to the UI element.
+    // Create the search box and display it on screen
     var input = document.getElementById('pac-input');
     var searchBox = new google.maps.places.SearchBox(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -48,9 +56,7 @@ function initAutocomplete() {
     });
 
     var markers = [];
-    // [START region_getplaces]
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
+    // Listen for clicks on the search box results
     searchBox.addListener('places_changed', function () {
         var places = searchBox.getPlaces();
 
@@ -58,13 +64,13 @@ function initAutocomplete() {
             return;
         }
 
-        // Clear out the old markers.
+        // Delete the old markers.
         markers.forEach(function (marker) {
             marker.setMap(null);
         });
         markers = [];
 
-        // For each place, get the icon, name and location.
+        // For each place get the icon, name and location.
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function (place) {
             var icon = {
@@ -92,9 +98,11 @@ function initAutocomplete() {
         });
         map.fitBounds(bounds);
     });
-    // [END region_getplaces]
 
-    // pick list containing a mix of places and predicted search terms.
+    /** Show the user's map position on screen
+     *
+     * @param position - User's latitude and longitude position
+     */
     function setPosition(position) {
         pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         map.setCenter(pos, 5);
@@ -103,6 +111,7 @@ function initAutocomplete() {
 
     }
 
+    //Create a new parking icon to be used as a marker
     var icon = {
         url: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Parking_icon.svg", //url
         scaledSize: new google.maps.Size(35, 35),
@@ -110,18 +119,24 @@ function initAutocomplete() {
         anchor: new google.maps.Point(0, 0)
     };
 
+    //Retrieve the positions of each car park from the server
     getAjax("carParkPositions", placeMarkers);
 
+    /**Place the markers on screen for user selection
+     *
+     * @param data - The car park positions retrieved from the server
+     */
     function placeMarkers(data){
 
         markerArray = JSON.parse(data);
 
+        //Place a marker for each item in array
         for(var i = 0; i < markerArray.length; i ++) {
 
             marker = new google.maps.Marker({
                 icon: icon,
                 map: map,
-                draggable: true,
+                draggable: false,
                 animation: google.maps.Animation.DROP,
                 position: {
                     lat: markerArray[i].lat, lng: markerArray[i].lng
@@ -136,11 +151,16 @@ function initAutocomplete() {
 
 }
 
+/**Get the details of a car park when its respective marker is clicked
+ *
+ */
 function click(){
 
+    //Round the latitude and longitude to ensure numbers for marker lookup will be the same
     var lat = Math.round(this.position.lat() * 1000000) / 1000000;
     var lng = Math.round(this.position.lng() * 1000000) / 1000000;
 
+    //Search for the car park by comparing locations with the location of the clicked marker
     var name;
     for(var i = 0; i < markerArray.length; i ++){
         if(lat == markerArray[i].lat && lng == markerArray[i].lng){
@@ -149,17 +169,15 @@ function click(){
         }
     }
 
+    //Get the car park details from the server and display the amount of free/total spaces
     getCarPark(name);
 
-    console.log(name);
-
+    //Open a popup and display the car park name
     document.getElementById("carParkName").innerText = name;
     $("#popupBasic").popup("open");
 
     if (marker.getAnimation() !== null) {
         marker.setAnimation(null);
-    } else {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
     }
 
 }

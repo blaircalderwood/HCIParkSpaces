@@ -1,4 +1,12 @@
-//Create a new parking space and set it's availability to free
+/**Create a new parking space and set it's availability to free
+ *
+ * @param x - The x value of the space
+ * @param y - The y value of the space
+ * @param width - The width of the space
+ * @param height - The height of the space
+ * @returns {ParkingSpace}
+ * @constructor
+ */
 ParkingSpace = function (x, y, width, height) {
 
     this.x = x;
@@ -10,7 +18,11 @@ ParkingSpace = function (x, y, width, height) {
 
 };
 
-//Change the colour of a space to indicate whether it is free (green) or taken (red)
+/**Change the colour of a space to indicate whether it is free (green) or taken (red)
+ *
+ * @param colour - Set to "green" to indicate a free space or "red" to indicate a taken space
+ * @param index - The index of the space in the parking array
+ */
 ParkingSpace.prototype.spaceFree = function(colour, index) {
 
     context.fillStyle = colour;

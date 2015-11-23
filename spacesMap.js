@@ -124,10 +124,18 @@ function successCarPark(data) {
 
 }
 
+/**Display an alert to the user if there is a network error
+ *
+ */
 function networkError() {
     alert("Car park could not be found. Please check your network settings and try again.");
 }
 
+/**Get data from the server
+ *
+ * @param urlEnd - The end of the url that will be used to retrieve the data
+ * @param successFunction - The function that will be called when the data is retrieved
+ */
 function getAjax(urlEnd, successFunction) {
 
     $.ajax({
@@ -144,12 +152,17 @@ function getAjax(urlEnd, successFunction) {
 }
 
 //Test functions not implemented in final version but have been included to show certain tests used
-
+//TO DO: delete
 function testPutSpaces(availability){
 
     getAjax("putSpace?name=Byres%20Road%20Car%20Park&floor=0&spaceIndex=5&availability=" + availability)
 }
 
+/**Used in development to generate an array of randomly placed 1s and 0s to simulate a real car park
+ *
+ * @param floors - The amount of floors in the car park
+ * @param spaces = The amount of spaces on each floor
+ */
 function generateRandomParking(floors, spaces){
 
     var newParkingArray = [];
