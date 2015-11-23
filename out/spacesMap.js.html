@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: spacesMap.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: spacesMap.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var context, mainCanvas;
+var parkingArray = [];
+var carPark = {};
+var carParkName;
+var road_arrow;
+
+/**Perform on window load
+ *
+ */
+window.onload = function () {
+
+    //Check if reloaded page is the car park space map (fixes an issue that prevented loading of space map)
+    if ($(location).attr('href').indexOf("#parkingPage") != -1)showMapsPage();
+
+    //Show the map of free spaces
+    $("#parkingPage").on('pageshow', showMapsPage);
+
+};
+
+/**Load the arrow image and the space map
+ *
+ */
+function showMapsPage() {
+
+    road_arrow = new Image();
+    road_arrow.src = "images/arrow.png";
+    road_arrow.onload = function () {
+        setUpCanvas();
+
+        getCarPark(carParkName);
+
+    }
+
+}
+
+/**Get the car park details from the server
+ *
+ * @param name - the name of the car park (e.g. "Byres Road Car Park")
+ */
+function getCarPark(name) {
+
+    //If no name is passed in then the user has reloaded the page - use the last known car park name
+    if (!name) {
+        if (localStorage.getItem("carParkName")){
+            carParkName = localStorage.getItem("carParkName");
+        }
+        else alert("No car park found. Please reload the website and start again.")
+    }
+    //If a name is found save it to local storage in case user reloads page
+    else {
+        carParkName = name;
+        localStorage.setItem("carParkName", carParkName);
+    }
+
+    //Get the car park details from the server
+    if (carPark == {} || carPark.name != carParkName) {
+        getAjax("getCarPark?name=" + carParkName, successCarPark);
+    }
+
+    //Check for changed space maps (e.g. a space has change from taken to free) every second
+    setInterval(function() {
+        getAjax("getCarPark?name=" + carParkName, successCarPark);
+    }, 1000);
+
+}
+
+/**Load the map canvas from the DOM
+ *
+ */
+function setUpCanvas() {
+
+    var uiContent = $('.ui-content');
+
+    //Set up the canvas size to fit the screen
+    var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -
+        $(".ui-footer").outerHeight() - uiContent.outerHeight() + uiContent.height();
+    uiContent.height(content);
+
+    var domCanvas = document.getElementById('mainCanvas');
+    mainCanvas = $('#mainCanvas');
+    domCanvas.width = $(window).width();
+    domCanvas.height = content * 0.95;
+    context = mainCanvas[0].getContext('2d');
+
+    //Set functions to change floor
+    mainCanvas.on("swipeleft", this.floorUp);
+    mainCanvas.on("swiperight", this.floorDown);
+
+}
+
+/**Create a new CarPark object with details retrieved from the server
+ *
+ * @param data - The data recieved from the server
+ */
+function successCarPark(data) {
+
+    parkingArray = [];
+
+    if (data == "Not Found") {
+        networkError();
+    }
+    else {
+
+        data = JSON.parse(data);
+
+        var maxFloors = data.parkingArray.length - 1;
+        var freeSpaces = 0;
+        var totalSpaces = 0;
+
+        for (var i = 0; i &lt; data.parkingArray.length; i++) {
+            for (var j = 0; j &lt; data.parkingArray[i].length; j++) {
+                totalSpaces++;
+                if (data.parkingArray[i][j] == 0) {
+                    freeSpaces++;
+                }
+            }
+        }
+
+        carPark = new CarPark(data.name, maxFloors, freeSpaces, totalSpaces, data.parkingArray, data.spacesWide, carPark.currentFloor || 0);
+
+        if ($(location).attr('href').indexOf("#parkingPage") !== -1) carPark.show();
+        else carPark.displayFreeSpaces();
+    }
+
+}
+
+/**Display an alert to the user if there is a network error
+ *
+ */
+function networkError() {
+    alert("Car park could not be found. Please check your network settings and try again.");
+}
+
+/**Get data from the server
+ *
+ * @param urlEnd - The end of the url that will be used to retrieve the data
+ * @param successFunction - The function that will be called when the data is retrieved
+ */
+function getAjax(urlEnd, successFunction) {
+
+    $.ajax({
+        type: "GET",
+        url: "https://parking-spaces-blaircalderwood.c9.io/" + urlEnd,
+        async: "true",
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: successFunction || function () {
+            console.log("Received data");
+        }
+    });
+
+}
+
+//Test functions not implemented in final version but have been included to show certain tests used
+//TO DO: delete
+function testPutSpaces(availability){
+
+    getAjax("putSpace?name=Byres%20Road%20Car%20Park&amp;floor=0&amp;spaceIndex=5&amp;availability=" + availability)
+}
+
+/**Used in development to generate an array of randomly placed 1s and 0s to simulate a real car park
+ *
+ * @param floors - The amount of floors in the car park
+ * @param spaces = The amount of spaces on each floor
+ */
+function generateRandomParking(floors, spaces){
+
+    var newParkingArray = [];
+
+    for(var i = 0; i &lt; floors; i ++){
+        newParkingArray[i] = [];
+        for(var j = 0; j &lt; spaces; j ++){
+            newParkingArray[i][j] = Math.round(Math.random());
+        }
+    }
+
+    return JSON.stringify(newParkingArray);
+
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CarPark.html">CarPark</a></li><li><a href="ParkingSpace.html">ParkingSpace</a></li><li><a href="SelectedMarker.html">SelectedMarker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#click">click</a></li><li><a href="global.html#generateRandomParking">generateRandomParking</a></li><li><a href="global.html#getAjax">getAjax</a></li><li><a href="global.html#getCarPark">getCarPark</a></li><li><a href="global.html#gMapLoaded">gMapLoaded</a></li><li><a href="global.html#networkError">networkError</a></li><li><a href="global.html#setUpCanvas">setUpCanvas</a></li><li><a href="global.html#showMapsPage">showMapsPage</a></li><li><a href="global.html#successCarPark">successCarPark</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Mon Nov 23 2015 09:32:38 GMT+0000 (GMT Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
